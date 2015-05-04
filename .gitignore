@@ -2,3 +2,5 @@ Figs/
 ClassifierData/
 MetricsData/
 TestTimes/
+*.asv
+matFiles/
