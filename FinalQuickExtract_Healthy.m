@@ -15,14 +15,14 @@
 close all, clear all
 
 Fs = 100;   %Original Sampling freq
-Resample = 1;   %if resample to 30 Hz
+Resample = 0;   %if resample to 30 Hz
 minSectionLength=4*Fs; %Minimum length of walking section that must be within the window (in samples)
 numFeat=4; %Number of features (columns) in Metrics matrix
 
-MetricsPath = './MetricsData/Patients/SDD/'; %folder where Avg Results per test are saved
-MetricsPathDet = './MetricsData/Patients/SDD/Detailed/'; %folder for each walk section results
-datapathTT = './TestTimes/HealthyControls/SDD/'; %datapath of TestTimes Data
-datapathacc = './TestTimes/HealthyControls/SDD/Rawaccdata/'; %datapath of raw acc data
+MetricsPath = './MetricsData/Experts/KS0/'; %folder where Avg Results per test are saved
+MetricsPathDet = './MetricsData/Experts/KS0/Detailed/'; %folder for each walk section results
+datapathTT = './TestTimes/Experts/KS0/'; %datapath of TestTimes Data
+datapathacc = './TestTimes/Experts/KS0/'; %datapath of raw acc data
 
 removed = 0;    %variable accounting for data points removed from Metrics
 
@@ -65,14 +65,15 @@ for indDates = 1:length(filenames)
             testStart(numOfTests)=i;
         end
     end
-    if numOfTests==1
-        Test={'Post'};
-    else
-        Test={'Test1', 'Test2', 'Test3'};
-    end
     
     for numTest=1:numOfTests
-        testCount=count; %number of walking sections within test
+        
+        if numOfTests == numTest
+             testCount=count-testStart(numTest)+1; %number of walking sections within test
+        else
+             testCount=testStart(numTest+1)-testStart(numTest);
+        end
+        
         accWaist = accraw;
         
         Starttime = [TestTimes{testStart(numTest)} ':00.000'];
@@ -112,16 +113,20 @@ for indDates = 1:length(filenames)
         end
         
         TestLength=Fs*60*6; %Total samples per test
-        TimeStart=TestTimes{1,3}; % index of test start
+        TimeStart=ceil(TestTimes{testStart(numTest),3}*scale); % index of test start
         acctrim=accWaist;
-        numMinutes=6;
+        numMinutes=6;   %length of each test
+        
+        Metrics=zeros(numMinutes, numFeat); %Initialize Detailed Metrics matrix (one row per minute of each test)
+
         %%
         for minute=1:numMinutes
             
-            Metrics=zeros(testCount+1, numFeat);
+%             Metrics=zeros(testCount+1, numFeat);
+
             for num=1:testCount
-                t1 = TestTimes{num,3}; t2 = TestTimes{num,4};
-                t1 = ceil(TestTimes{num,3}*scale); t2 = ceil(TestTimes{num,4}*scale);
+                t1 = ceil(TestTimes{num+testStart(numTest)-1,3}*scale);
+                t2 = ceil(TestTimes{num+testStart(numTest)-1,4}*scale);
                 if t1<(60*Fs*(minute-1)+TimeStart)
                     t1=60*Fs*(minute-1)+TimeStart;
                 elseif t1>(60*Fs*minute+TimeStart-1)
@@ -189,7 +194,7 @@ for indDates = 1:length(filenames)
                     am=mean(alphaf);
                     as=std(alphaf);
                     
-                    Metrics(num-testStart(numTest)+1,1:2)=[Nsteps, ps];
+                    Metrics(minute,1:2)=[Nsteps, ps];
                     %% ENERGY EXPENDITURE (EE)
                     
                     %compute EE/step only if Nsteps is defined
@@ -218,43 +223,36 @@ for indDates = 1:length(filenames)
                         Etot = sum(E);      %total energy over walk session
                         Nsteps = Nsteps*t(end);
                         Estep = Etot/Nsteps;
-                        Metrics(num-testStart(numTest)+1, 3)=Estep;
-                        Metrics(num-testStart(numTest)+1, 4)=Nsteps;
+                        Metrics(minute, 3)=Estep;
+                        Metrics(minute, 4)=Nsteps;
                         
                         clear E
                         
                     else
                         Estep = 0;
-                        Metrics(num, 3)=Estep;
-                        Metrics(num, 4)=Nsteps;
+                        Metrics(minute, 3)=Estep;
+                        Metrics(minute, 4)=Nsteps;
                     end
-                    Metrics(num,5)=t2-t1;
-                    %% Last row of Metrics contains weighted mean over all walking section
-                    currentRow=testCount+1;
-                    MetricsTMP=Metrics;
-                    
-                    MetricsTMP(end,5)=sum(Metrics(1:end-1,5));
-                    
-                    %last row contains weighted mean of each feature
-                    MetricsTMP(end,1)=sum(MetricsTMP(1:end-1,1).*MetricsTMP(1:end-1,5))/MetricsTMP(end,4);
-                    MetricsTMP(end,2)=sum(MetricsTMP(1:end-1,2).*MetricsTMP(1:end-1,5))/MetricsTMP(end,4);
-                    MetricsTMP(end,3)=sum(MetricsTMP(1:end-1,3).*MetricsTMP(1:end-1,5))/MetricsTMP(end,4);
-                    MetricsTMP(end,4)=sum(MetricsTMP(1:end-1,4))/6; %Steps per minute
-                    Metrics=MetricsTMP;
-                    clear MetricsTMP
-                    
-                    %save metrics for each walk section
-                    disp(['Saving ' MetricsPathDet Patient '_' Date 'Minute' minute '_Metrics.mat']);
-                    save([MetricsPathDet Patient '_' Date 'Minute' minute '_Metrics.mat'], 'Metrics')
-                    
-                    %save weighted average metrics (last row of Metrics.mat)
-                    MetricsMean(minute,:) = Metrics(end,:);
-                    disp(['Saving ' MetricsPath Patient '_' Date 'Minute' minute '_MetricsMean.mat']);
-                    save([MetricsPath Patient '_' Date '_MetricsMean.mat'], 'MetricsMean')
-                    
-                    clear Metrics
+                    Metrics(minute,5)=t2-t1;
+ 
                 end
+
             end
         end
+        %save metrics for each walk section
+        disp(['Saving ' MetricsPathDet Patient '_' Date '_Test' num2str(numTest) '_Metrics.mat']);
+        save([MetricsPathDet Patient '_' Date '_Test' num2str(numTest) '_Metrics.mat'], 'Metrics')
+        
+        %Average over the test
+        MetricsMean = [MetricsMean;mean(Metrics(:,1:numFeat))];
+        
+        clear Metrics
+    
     end
+    
+    %save MetricsMean
+    disp(['Saving ' MetricsPath Patient '_' Date '_MetricsMean.mat']);
+    save([MetricsPath Patient '_' Date '_MetricsMean.mat'], 'MetricsMean')
+        
+    
 end

@@ -3,7 +3,7 @@
 % Make sure to indicate the correct sampling frequency for the data set
 
 Fs = 100;   %Sampling freq
-Resample = 0;   %Flag to indicate Resampling at 30 Hz
+Resample = 1;   %Flag to indicate Resampling at 30 Hz
 
 acc = cell2mat(accraw(:,2:end));
 
@@ -31,8 +31,8 @@ acc = accraw;
 % Starttime = [TestTimes{num,1} ':00.000']; 
 % Endtime = [TestTimes{num,2} ':00.000'];
 
-Starttime = '17:11:00.000';
-Endtime = '17:18:00.000';
+Starttime = '11:04:00.000';
+Endtime = '11:12:00.000';
 
 i = 0; t = 0;
 while i == 0
@@ -145,7 +145,7 @@ end
 % row of TestTimes corresponding to the value of "num"
 
 % close all
-num=2;
+num=1;
 t1 = TestTimes{num,3}; t2 = TestTimes{num,4};
 accwalk = acctrim(t1:t2,:);
 figure
