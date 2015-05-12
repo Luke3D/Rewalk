@@ -19,10 +19,10 @@ Resample = 0;   %if resample to 30 Hz
 minSectionLength=4*Fs; %Minimum length of walking section that must be within the window (in samples)
 numFeat=4; %Number of features (columns) in Metrics matrix
 
-MetricsPath = './MetricsData/Experts/KS0/'; %folder where Avg Results per test are saved
-MetricsPathDet = './MetricsData/Experts/KS0/Detailed/'; %folder for each walk section results
-datapathTT = './TestTimes/Experts/KS0/'; %datapath of TestTimes Data
-datapathacc = './TestTimes/Experts/KS0/'; %datapath of raw acc data
+MetricsPath = './MetricsData/Experts/SDD/'; %folder where Avg Results per test are saved
+MetricsPathDet = './MetricsData/Experts/SDD/Detailed/'; %folder for each walk section results
+datapathTT = './TestTimes/Experts/SDD/'; %datapath of TestTimes Data
+datapathacc = './TestTimes/Experts/SDD/'; %datapath of raw acc data
 
 removed = 0;    %variable accounting for data points removed from Metrics
 

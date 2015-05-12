@@ -1,7 +1,7 @@
 clear all
 % datapath = '.\TestTimes\Experts\LL0\';
 datapath = 'C:\WORK\Rewalk\Data\';
-filename = 'R00_Waist (2015-04-17)RAW.csv';
+filename = '09 waist (2014-09-30)RAW.csv';
 datafile = [datapath filename];
 ds = datastore(datafile,'NumHeaderLines',10,'ReadVariableNames',1);
 preview(ds)
@@ -9,8 +9,8 @@ preview(ds)
 % ds.SelectedVariableNames = 'Timestamp';
 ds.RowsPerRead = 3E5;
 
-Startdate = '4/17/2015 11:31:00.000';
-Enddate = '4/17/2015 11:51:00.000';
+Startdate = '9/30/2014 13:42:00.000';
+Enddate = '9/30/2014 14:00:00.000';
 
 %scan for timestamps
 % ist = []; iend = [];
@@ -58,7 +58,7 @@ while hasdata(ds)
     end
 end
 
-filename2 = 'R00_Waist(2015-04-17)RAW.csv';
+filename2 = 'R09_Waist(2014-09-30)RAW.csv';
 writetable(Data,[datapath filename2])
 
 
