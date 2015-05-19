@@ -31,8 +31,8 @@ acc = accraw;
 % Starttime = [TestTimes{num,1} ':00.000']; 
 % Endtime = [TestTimes{num,2} ':00.000'];
 
-Starttime = '13:44:00.000';
-Endtime = '13:56:00.000';
+Starttime = '11:32:00.000';
+Endtime = '11:40:00.000';
 
 i = 0; t = 0;
 while i == 0
@@ -159,9 +159,13 @@ ylabel('acc [g]')
 %% Compute lateral and frontal tilt from accelerometer data 
 
 %tilt (frontal) inclination 
-phi = (180/pi)*atan2(accwalk(:,2),accwalk(:,1));    %ATAN2 does not suffer from sensitivity issues
+% phi = (180/pi)*atan2(accwalk(:,2),accwalk(:,1));    %ATAN2 does not suffer from sensitivity issues - OLD Actigraph (1 = g, 2 = x)
+phi = (180/pi)*atan2(accwalk(:,1),accwalk(:,2));    %ATAN2 does not suffer from sensitivity issues - NEW Actigraph (2 = g, 1 = x)
+
 %roll (lateral) inclination
-alpha = (180/pi)*atan2(accwalk(:,3),accwalk(:,1));
+% alpha = (180/pi)*atan2(accwalk(:,3),accwalk(:,1)); OLD Actigraph (1 = g)
+alpha = (180/pi)*atan2(accwalk(:,3),accwalk(:,2));  %NEW Actigraph (2 = g)
+
 
 figure; 
 subplot(121)            
