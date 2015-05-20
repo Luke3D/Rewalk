@@ -19,10 +19,10 @@ Resample = 0;   %if resample to 30 Hz
 minSectionLength=4*Fs; %Minimum length of walking section that must be within the window (in samples)
 numFeat=4; %Number of features (columns) in Metrics matrix
 
-MetricsPath = './MetricsData/Experts/AMS/'; %folder where Avg Results per test are saved
-MetricsPathDet = './MetricsData/Experts/AMS/Detailed/'; %folder for each walk section results
-datapathTT = './TestTimes/Experts/AMS/'; %datapath of TestTimes Data
-datapathacc = './TestTimes/Experts/AMS/'; %datapath of raw acc data
+MetricsPath = './MetricsData/Experts/MK0/'; %folder where Avg Results per test are saved
+MetricsPathDet = './MetricsData/Experts/MK0/Detailed/'; %folder for each walk section results
+datapathTT = './TestTimes/Experts/MK0/'; %datapath of TestTimes Data
+datapathacc = './TestTimes/Experts/MK0/'; %datapath of raw acc data
 
 removed = 0;    %variable accounting for data points removed from Metrics
 
@@ -118,10 +118,9 @@ for indDates = 1:length(filenames)
         numMinutes=6;   %length of each test
         
         Metrics=zeros(numMinutes, numFeat); %Initialize Detailed Metrics matrix (one row per minute of each test)
-
         %%
         for minute=1:numMinutes
-            
+            MetricsMinute=zeros(1,numFeat+1);
 %             Metrics=zeros(testCount+1, numFeat);
 
             for num=1:testCount
@@ -234,9 +233,21 @@ for indDates = 1:length(filenames)
                         Metrics(minute, 4)=Nsteps;
                     end
                     Metrics(minute,5)=t2-t1;
- 
+                    if MetricsMinute(1,1)==0
+                        MetricsMinute(1,:)=Metrics(minute,:);
+                    else
+                        MetricsMinute=[MetricsMinute; Metrics(minute,:)];
+                    end
                 end
 
+            end
+            [sy,sx]=size(MetricsMinute);
+            if sy>1
+                Metrics(minute,1)=MetricsMinute(:,1).'*MetricsMinute(:,5)/sum(MetricsMinute(:,5));
+                Metrics(minute,2)=MetricsMinute(:,2).'*MetricsMinute(:,5)/sum(MetricsMinute(:,5));
+                Metrics(minute,3)=MetricsMinute(:,3).'*MetricsMinute(:,5)/sum(MetricsMinute(:,5));
+                Metrics(minute,4)=sum(MetricsMinute(:,4));
+                Metrics(minute,5)=sum(MetricsMinute(:,5));
             end
         end
         %save metrics for each walk section

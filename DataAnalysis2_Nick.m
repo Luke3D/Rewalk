@@ -159,12 +159,12 @@ ylabel('acc [g]')
 %% Compute lateral and frontal tilt from accelerometer data 
 
 %tilt (frontal) inclination 
-% phi = (180/pi)*atan2(accwalk(:,2),accwalk(:,1));    %ATAN2 does not suffer from sensitivity issues - OLD Actigraph (1 = g, 2 = x)
-phi = (180/pi)*atan2(accwalk(:,1),accwalk(:,2));    %ATAN2 does not suffer from sensitivity issues - NEW Actigraph (2 = g, 1 = x)
+phi = (180/pi)*atan2(accwalk(:,2),accwalk(:,1));    %ATAN2 does not suffer from sensitivity issues - OLD Actigraph (1 = g, 2 = x)
+% phi = (180/pi)*atan2(accwalk(:,1),accwalk(:,2));    %ATAN2 does not suffer from sensitivity issues - NEW Actigraph (2 = g, 1 = x)
 
 %roll (lateral) inclination
-% alpha = (180/pi)*atan2(accwalk(:,3),accwalk(:,1)); OLD Actigraph (1 = g)
-alpha = (180/pi)*atan2(accwalk(:,3),accwalk(:,2));  %NEW Actigraph (2 = g)
+alpha = (180/pi)*atan2(accwalk(:,3),accwalk(:,1)); %OLD Actigraph (1 = g)
+% alpha = (180/pi)*atan2(accwalk(:,3),accwalk(:,2));  %NEW Actigraph (2 = g)
 
 
 figure; 
