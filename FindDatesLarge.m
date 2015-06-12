@@ -1,16 +1,16 @@
 clear all
-datapath = '.\TestTimes\Experts\EH0\';
+datapath = '.\TestTimes\Patients\R11\Rawaccdata\';
 % datapath = 'C:\WORK\Rewalk\Data\';
-filename = 'EH0_Waist (2015-05-15)RAW.csv';
+filename = 'R11_Waist (2015-02-05)RAW.csv';
 datafile = [datapath filename];
 ds = datastore(datafile,'NumHeaderLines',10,'ReadVariableNames',1);
 preview(ds)
 %Find start and end time of experiment and save it as a new file
 % ds.SelectedVariableNames = 'Timestamp';
-ds.RowsPerRead = 3E5;
+ds.RowsPerRead = 1E5;
 
-Startdate = '5/15/2015 16:00:00.000';
-Enddate = '5/15/2015 16:42:00.000';
+Startdate = '2/5/2015 13:15:00.000';
+Enddate = '2/5/2015 13:25:00.000';
 
 %scan for timestamps
 % ist = []; iend = [];
@@ -58,7 +58,7 @@ while hasdata(ds)
     end
 end
 
-filename2 = 'EH0_Waist(2015-05-15)RAW.csv';
+filename2 = 'R11_Waist(2015-02-05)RAW.csv';
 writetable(Data,[datapath filename2])
 
 

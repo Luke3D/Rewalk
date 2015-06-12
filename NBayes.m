@@ -83,7 +83,7 @@ sdH = nanstd(X);
 %load metrics data (one patient)
 symb = {'b-o','r-s','c-*','m-x'}; %symbol used to plot data for that patient
 patient = 3;    %code for saving data
-Patient = 'R09';
+Patient = 'R15';
 datapath_patients = './MetricsData/NaiveBayes/Patients/';
 Metricswmean = load([datapath_patients Patient '_Metricswmean.mat']); %matrix with results from each training session
 Xp = Metricswmean.Datawmean;    %features for the patient each training session (row)

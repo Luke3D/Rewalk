@@ -15,14 +15,14 @@
 close all, clear all
 
 Fs = 100;   %Original Sampling freq
-Resample = 1;   %if resample to 30 Hz
+Resample = 0;   %if resample to 30 Hz
 minSectionLength=4*Fs; %Minimum length of walking section that must be within the window (in samples)
 numFeat=4; %Number of features (columns) in Metrics matrix
 
-MetricsPath = './MetricsData/Patients/SDD/'; %folder where Avg Results per test are saved
-MetricsPathDet = './MetricsData/Patients/SDD/Detailed/'; %folder for each walk section results
-datapathTT = './TestTimes/HealthyControls/SDD/'; %datapath of TestTimes Data
-datapathacc = './TestTimes/HealthyControls/SDD/Rawaccdata/'; %datapath of raw acc data
+MetricsPath = './MetricsData/Patients/R11/'; %folder where Avg Results per test are saved
+MetricsPathDet = './MetricsData/Patients/R11/Detailed/'; %folder for each walk section results
+datapathTT = './TestTimes/Patients/R11/'; %datapath of TestTimes Data
+datapathacc = './TestTimes/Patients/R11/Rawaccdata/'; %datapath of raw acc data
 
 removed = 0;    %variable accounting for data points removed from Metrics
 
@@ -47,7 +47,7 @@ for indDates = 1:length(filenames)
     %   (Should match format RXX_Waist(2014-01-01)RAW.csv)
     file = [datapathacc Patient '_Waist(' Date(1:end) ')RAW.csv'];
     disp(['Loading file ' file])
-    accrawcsv = readtable(file,'ReadVariableNames',0,'HeaderLines',11);
+    accrawcsv = readtable(file,'ReadVariableNames',0,'HeaderLines',10);
     accraw = table2cell(accrawcsv);
     accWaist = cell2mat(accraw(:,2:end));
     accWaist1=accWaist;

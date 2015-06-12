@@ -57,46 +57,33 @@ muH = nanmean(X);
 sdH = nanstd(X);
 
 %show covariance matrix of selected features
-% figure
-% AX = plotmatrix(X);
+figure
+AX = plotmatrix(X);
 
 
 %% Compute Expertise Index on Patients
 
 %load metrics data (one patient)
 symb = {'b-o','r-s','c-*','m-x'}; %symbol used to plot data for that patient
-patient = 3;    %code for saving data
-Patient = 'R09';
+patient = 4;    %code for saving data
+Patient = 'R15';
 datapath_patients = './MetricsData/NaiveBayes/Patients/';
-Metricswmean = load([datapath_patients Patient '_Metricswmean.mat']); %matrix with results from each training session
+Metricswmean = load([datapath_patients Patient '_MetricswMean.mat']); %matrix with results from each training session
 Xp = Metricswmean.Datawmean;    %features for the patient each training session (row)
-
-% %Normalize StepF to max device StepF [% of max]
-% datapath_patients_Set = './MetricsData/Patients/';
-% Fmax = load([datapath_patients_Set Patient '/StepSettings.mat']); Fmax = Fmax.StepSettings;
-% Xp(:,1) = Xp(:,1)./Fmax;
-
-Xp = Xp(:,Features);
+% Xp = Xp(:,Features);
 Nsessions = size(Xp,1);
 
 %Index for each train sessions
 for s = 1:Nsessions
     
-    %     %StepF Normalization - correct Healthy step Freq for R10 from session 4
-    %     if strcmp(Patient,'R10') && s==4
-    %         f0max = (1+0.25)^(-1);  %based on Healthy Settings
-    %         f1max = (0.78+0.225)^(-1); %based on mean R10 settings
-    %         muH(1) = muH(1)*(f1max/f0max);
-    %         sdH(1) = sdH(1)*(f1max/f0max);
-    %     end
     
     Xps = Xp(s,:);        %features for session s
     
-    %Threshold features larger than healthy (StepF,Wratio,Nsteps)
-    Xps(1) = min(Xps(1),muH(1));
-    Xps(4) = min(Xps(4),muH(4));
-    Xps(5) = min(Xps(5),muH(5));
-    
+%     %Threshold features larger than healthy (StepF,Wratio,Nsteps)
+%     Xps(1) = min(Xps(1),muH(1));
+%     Xps(4) = min(Xps(4),muH(4));
+%     Xps(5) = min(Xps(5),muH(5));
+%     
     
     logPp(s) = -sum( 0.5*log(2*pi*sdH.^2) + ((Xps-muH).^2)./(2*sdH.^2) );  %sum of Z-scores
     Ip(s) = (logPp(s)-MuPsih)./SdPsih;  %Expertiese index for session s
