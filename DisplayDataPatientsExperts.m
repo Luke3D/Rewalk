@@ -1,5 +1,6 @@
+%EXPERT: Based on expert subjects data 
 %display metrics for one subject and weighted avg across walk sections
-%Patients(1 = R02; 2 = R08; 3 = R09; 4 = R10)
+%Patients(1 = R09; 2 = R10; 3 = R11; 4 = R15)
 
 % close all
 clearvars -except muH sdH MuPsih SdPsih Sall ccoeff pccoeff CIfig ICIfig Featplot IpMulti IpOne
@@ -13,8 +14,8 @@ Nsessions = length(filenames);  %total # of training sessions
 Datawmean = [];                 %weighted avg metrics across walk sections
 DataAll = cell(1,Nsessions);    %metrics for each walk section across training
 DataAllMatrix = [];
-Features = [1 2 3 5 6];         %check that matches with var in NBayes.m
-FeatureNames = {'Step F [Hz]','Sd \phi [deg]','Energy [counts]','Walkdur [s]','Twalk/Ttot','Steps'};
+Features = [1 2 3 4];         %check that matches with var in NBayes.m
+FeatureNames = {'Step F [Hz]','Sd \phi [deg]','Energy [counts]','Steps'};
 numFeat=length(Features); %Number of features (columns) in Metrics matrix
 % symb = {'bo','rs','c*','mx'}; %symbol used to plot data for that patient
 symb = {'bo','ro','co','mo'}; %symbol used to plot data for that patient
@@ -28,7 +29,7 @@ for s = 1:Nsessions
     
     DataAllMatrix = [DataAllMatrix; Data(1:end-1,:)];   %concatenate all data in a single matrix
     DataAll{s} = Data(1:end-1,:);          %features from each walk section broken into sessions
-    Datawmean = [Datawmean;Data(end,:)];   %weighted features mean across walk sections
+    Datawmean = [Datawmean;Data(end,:)];   %weighted features mean across walk sections - NOW LAST ROW DOES NOT CONTAIN WEIGHTED MEAN - CHECK WITH NICK
     
 end
 
@@ -45,9 +46,9 @@ set(P,'FaceColor','r')
 
 for i = 1:length(Features)
     ylabel(AX(i),FeatureNames{Features(i)},'FontSize',16)
-    xlabel(AX(5,i),FeatureNames{Features(i)},'FontSize',16)
+    xlabel(AX(4,i),FeatureNames{Features(i)},'FontSize',16)
     set(AX(i),'FontSize',15)
-    set(AX(5,i),'FontSize',15)
+    set(AX(4,i),'FontSize',15)
 end
 %set axis limits as for healthy plot
 if exist('XlimH','var')
@@ -188,9 +189,9 @@ end
 
 %compute weighted mean and CI for each block by bootstrap
 for b = 1:length(Datab)
-    wmean1000 = bootstrp(1000,@wmean,Datab{b});
-    wm(b,:) = mean(wmean1000,1);
-    ci(:,:,b) = bootci(1000,@wmean,Datab{b});    %confidence interval for block b
+    wmean1000 = bootstrp(1000,@wmeanE,Datab{b});
+    wm(b,:) = mean(wmeanE1000,1);
+    ci(:,:,b) = bootci(1000,@wmeanE,Datab{b});    %confidence interval for block b
 end
 
 %walk ratio is sum (Feature 5)

@@ -18,7 +18,7 @@ MetricsMeanAll(3,:) = [];
 Nsubj = size(MetricsMeanAll,1);
 
 %Patient Data
-Patient = 'R11';
+Patient = 'R10';
 patient = 2;    %code for saving data
 datapath_patients = './MetricsData/NaiveBayes/Patients/';
 %load metrics data (one patient)
