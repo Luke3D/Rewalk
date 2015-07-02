@@ -20,10 +20,10 @@ Resample = 0;   %if resample to 30 Hz
 minSectionLength=4*Fs; %Minimum length of walking section that must be within the window (in samples)
 numFeat=4; %Number of features (columns) in Metrics matrix
 
-MetricsPath = './MetricsData/Patients/R10/'; %folder where Avg Results per test are saved
-MetricsPathDet = './MetricsData/Patients/R10/Detailed/'; %folder for each walk section results
-datapathTT = './TestTimes/Patients/R10/'; %datapath of TestTimes Data
-datapathacc = './TestTimes/Patients/R10/Rawaccdata/'; %datapath of raw acc data
+MetricsPath = './MetricsData/Patients/R15/'; %folder where Avg Results per test are saved
+MetricsPathDet = './MetricsData/Patients/R15/Detailed/'; %folder for each walk section results
+datapathTT = './TestTimes/Patients/R15/'; %datapath of TestTimes Data
+datapathacc = './TestTimes/Patients/R15/Rawaccdata/'; %datapath of raw acc data
 
 removed = 0;    %variable accounting for data points removed from Metrics
 
@@ -41,8 +41,8 @@ for indDates = 1:length(filenames)
     TestTimes = load(strcat(datapathTT,filenames(indDates).name)); TestTimes = TestTimes.TestTimes;
     disp(['File ' strcat(datapathTT,filenames(indDates).name) ' loaded']);
     Patient = filenames(indDates).name(1:3);    %Patient Code
-%     Date = filenames(indDates).name(5:14);     %Test date - Format RXX_2014-01-01
-    Date = filenames(indDates).name(11:20);     %Test date - Format RXX_Waist(2014-01-01)
+    Date = filenames(indDates).name(5:14);     %Test date - Format RXX_2014-01-01
+%     Date = filenames(indDates).name(11:20);     %Test date - Format RXX_Waist(2014-01-01)
     
     %LOAD RAW WAIST ACC DATA
 %     file = [datapathacc Patient '_Waist(' Date(1:end) ')RAW.csv']; %Should match format RXX_Waist(2014-01-01)RAW.csv)

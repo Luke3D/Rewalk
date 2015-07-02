@@ -31,8 +31,8 @@ acc = accraw;
 % Starttime = [TestTimes{num,1} ':00.000']; 
 % Endtime = [TestTimes{num,2} ':00.000'];
 
-Starttime = '11:33:00.000';
-Endtime = '11:40:00.000';
+Starttime = '14:51:00.000';
+Endtime = '14:58:00.000';
 
 i = 0; t = 0;
 while i == 0
@@ -282,7 +282,8 @@ ylabel('\alpha Trunk [deg]')
 
 %% Plot ellipse whose axes are variance of tilt angles
 
-%remove first and last 3 seconds of data
+%remove first and last 3 seconds of data (to remove artifacts at beginning
+%and end of a walk)
 phif(1:3*Fs) = [];
 phif(end-3*Fs:end) = [];
 alphaf(1:3*Fs) = [];
@@ -290,8 +291,11 @@ alphaf(end-3*Fs:end) = [];
 
 alpha0 = alphaf - mean(alphaf);
 
-phi_lp = smooth(phif,10);
-alpha_lp = smooth(alpha0,10); 
+% phi_lp = smooth(phif,10);
+% alpha_lp = smooth(alpha0,10); 
+phi_lp = phif;
+alpha_lp = alpha0; 
+
 
 figure, hold on
 subplot(121), plot(phi_lp), hold on
@@ -307,12 +311,14 @@ signdPhi = [];
 for k=1:length(dPhi)-1
     signdPhi(k) = dPhi(k)*dPhi(k+1);
 end
-   
 ind0 = find(signdPhi < 0);
 ind0opt = [];
 corr=0;
+
+ %search in the neighbor of sign inversion
 for k=1:length(ind0)
-    [~,ik] = min(dPhi(ind0(k)-1:ind0(k)+1));    %search in the neighbor of sign inversion
+        
+    [~,ik] = min(dPhi(ind0(k)-1:ind0(k)+1));   
     ind0opt(k-corr)=ind0(k)+ik-2;
     if k>1
         if ind0opt(k-corr)-ind0opt(k-1-corr)<10

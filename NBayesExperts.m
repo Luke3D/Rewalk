@@ -65,8 +65,8 @@ AX = plotmatrix(X);
 
 %load metrics data (one patient)
 symb = {'b-o','r-s','c-*','m-x'}; %symbol used to plot data for that patient
-patient = 4;    %code for saving data
-Patient = 'R15';
+patient = 2;    %code for saving data
+Patient = 'R10';
 datapath_patients = './MetricsData/NaiveBayes/Patients/';
 Metricswmean = load([datapath_patients Patient '_MetricswMean.mat']); %matrix with results from each training session
 Xp = Metricswmean.Datawmean;    %features for the patient each training session (row)
