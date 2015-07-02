@@ -31,7 +31,7 @@ acc = accraw;
 % Starttime = [TestTimes{num,1} ':00.000']; 
 % Endtime = [TestTimes{num,2} ':00.000'];
 
-Starttime = '11:32:00.000';
+Starttime = '11:33:00.000';
 Endtime = '11:40:00.000';
 
 i = 0; t = 0;
@@ -159,12 +159,12 @@ ylabel('acc [g]')
 %% Compute lateral and frontal tilt from accelerometer data 
 
 %tilt (frontal) inclination 
-phi = (180/pi)*atan2(accwalk(:,2),accwalk(:,1));    %ATAN2 does not suffer from sensitivity issues - OLD Actigraph (1 = g, 2 = x)
-% phi = (180/pi)*atan2(accwalk(:,1),accwalk(:,2));    %ATAN2 does not suffer from sensitivity issues - NEW Actigraph (2 = g, 1 = x)
+% phi = (180/pi)*atan2(accwalk(:,2),accwalk(:,1));    %ATAN2 does not suffer from sensitivity issues - OLD Actigraph (1 = g, 2 = x)
+phi = (180/pi)*atan2(accwalk(:,1),accwalk(:,2));    %ATAN2 does not suffer from sensitivity issues - NEW Actigraph (2 = g, 1 = x)
 
 %roll (lateral) inclination
-alpha = (180/pi)*atan2(accwalk(:,3),accwalk(:,1)); %OLD Actigraph (1 = g)
-% alpha = (180/pi)*atan2(accwalk(:,3),accwalk(:,2));  %NEW Actigraph (2 = g)
+% alpha = (180/pi)*atan2(accwalk(:,3),accwalk(:,1)); %OLD Actigraph (1 = g)
+alpha = (180/pi)*atan2(accwalk(:,3),accwalk(:,2));  %NEW Actigraph (2 = g)
 
 
 figure; 
@@ -239,41 +239,55 @@ sdev = std(samples)
 t = 0:1/Fs:(length(accwalk)/Fs-1/Fs);
 
 ft = 1.5; %cut-off freq
-[B,A] = butter(1, 2*ft/Fs);   %1st order, cutoff frequency 7Hz (Normalized by 2*pi*Sf) [rad/s]
+[B,A] = butter(2, 2*ft/Fs);   %1st order, cutoff frequency 7Hz (Normalized by 2*pi*Sf) [rad/s]
 phif = filtfilt(B,A,phi);   %the filtered version of the signal
 figure('name','Filtered angles - Actigraph');
 subplot(121)
 plot(t,phif); hold on
 xlabel('Time [s]')
 ylabel('\phi Trunk [deg]')
-xlim([6 16])
+xlim([0 30])
 % xlim([0 t(end)+1]);  
-ylim([-12 20]);
+% ylim([-12 20]);
 
 % %alpha
 ft = 0.5;
-[B,A] = butter(1, 2*ft/Fs);   %1st order, cutoff frequency 7Hz (Normalized by 2*pi*Sf) [rad/s]
+[B,A] = butter(2, 2*ft/Fs);   %1st order, cutoff frequency 7Hz (Normalized by 2*pi*Sf) [rad/s]
 alphaf = filtfilt(B,A,alpha);   %the filtered version of the signal
 subplot(122)
-plot(t,alphaf);  xlim([6 16])
+plot(t,alphaf);  
+xlim([0 30])
 % xlim([0 t(end)+1]); 
-ylim([-12 20]);
+% ylim([-12 20]);
 xlabel('Time [s]')
 ylabel('\alpha Trunk [deg]')
 
+%% Compute measure of smoothness
+% dphif = diff(phif);
+% ddphif = diff(dphif);
+% T = length(ddphif)/Fs;
+% smoothness = 1/(trapz(ddphif.^2)/T)
 % 
-% Bessel Filter
-% [b,a]=besself(5,10);
-% [bz,az]=impinvar(b,a,30);
+% [rrphi,lagsphi] = xcorr(phif,'coeff');
+% [rralpha,lagsalpha] = xcorr(alphaf,'coeff');
 % 
-% phif=filtfilt(bz,az,phi);
+% rrphi = rrphi(lagsphi>0);
+% lagsphi = lagsphi(lagsphi>0);
+% 
 % figure
-% plot(t,phif)
+% plot(lagsphi/Fs,rrphi)
+% xlabel('Lag (s)')
 
-%Plot ellipse whose axes are variance of tilt angles
-%(TO BE DONE)
+
 
 %% Plot ellipse whose axes are variance of tilt angles
+
+%remove first and last 3 seconds of data
+phif(1:3*Fs) = [];
+phif(end-3*Fs:end) = [];
+alphaf(1:3*Fs) = [];
+alphaf(end-3*Fs:end) = [];
+
 alpha0 = alphaf - mean(alphaf);
 
 phi_lp = smooth(phif,10);
@@ -289,16 +303,16 @@ subplot(121), plot(dPhi,'.r')
 subplot(122), plot(dAlpha,'.-r')
 
 %detect zero crossing for dPhi
-signPhi = [];
+signdPhi = [];
 for k=1:length(dPhi)-1
-    signPhi(k) = dPhi(k)*dPhi(k+1);
+    signdPhi(k) = dPhi(k)*dPhi(k+1);
 end
    
-ind0 = find(signPhi < 0);
+ind0 = find(signdPhi < 0);
 ind0opt = [];
 corr=0;
 for k=1:length(ind0)
-    [~,ik] = min(dPhi(ind0(k)-1:ind0(k)+1));
+    [~,ik] = min(dPhi(ind0(k)-1:ind0(k)+1));    %search in the neighbor of sign inversion
     ind0opt(k-corr)=ind0(k)+ik-2;
     if k>1
         if ind0opt(k-corr)-ind0opt(k-1-corr)<10
@@ -314,6 +328,45 @@ subplot(121),plot(ind0,dPhi(ind0),'mx','MarkerSize',16)
 %plot alpha and phi when phi=phimax 
 figure, hold on, grid on, xlim([-15 15]), ylim([-8 20.5])
 plot(alpha0(ind0),phif(ind0),'or'), xlabel('alpha'), ylabel('phi')
+
+%% extract datapoints between 2 consecutive minima 
+d2Phi = diff(dPhi);
+d2Phi0 = d2Phi(ind0);
+im = find(d2Phi0 > 0);
+ind0m = ind0(im);   %indices of local minimas in phif
+
+x = {}; t= {}; x100 = [];
+t100 = linspace(0,1,101);
+figure, hold on
+for k =1:length(ind0m)-1
+    
+    x{k} = phif(ind0m(k):ind0m(k+1));
+    x{k} = x{k}-x{k}(1);    %remove amplitude offset
+    t{k} = linspace(0,1,length(x{k}));
+    %     plot(t{k},x{k})
+    %resample to uniform # of points and normalize amplitude
+    xnew = interp1(t{k},x{k},t100);
+    xnew = xnew./max(abs(xnew));         %normalize amplitude
+    x100 = [x100;xnew];
+    plot(t100,x100(k,:))
+    
+    %compute RMSE between 2 consecutive trials
+    if k > 1
+        RMSE(k-1) = sum( (x100(k-1,:)-x100(k,:)).^2 ) / length(t100);
+        
+    end
+
+    %compute max Amplitude and Time where max occurs
+    [Amax(k),Tmax1(k)] = max(x100(k,:))
+    Tmax(k) = t100(Tmax1(k));
+
+    
+    % input('')
+end
+
+ylim([-1.2 1.2])
+
+
 
 %min and max phi values separated
 % PhimM = phi_lp(ind0);

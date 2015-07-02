@@ -8,7 +8,8 @@
 % 1. Step Frequency
 % 2. StdDev of frontal tilt
 % 3. Energy per Step
-% 4. Number of steps per minute
+% 4. Number of steps per minute (****THIS HAS TO BE ALWAYS THE LAST
+% FEATURE)
 
 % Final row has average results for training session
 % Be sure to indicate the appropriate sampling frequency below
@@ -255,8 +256,10 @@ for indDates = 1:length(filenames)
         save([MetricsPathDet Patient '_' Date '_Test' num2str(numTest) '_Metrics.mat'], 'Metrics')
         
         %Average over the test
-        MetricsMean = [MetricsMean;mean(Metrics(:,1:numFeat))];
-        
+%         MetricsMean = [MetricsMean;mean(Metrics(:,1:numFeat))];
+        rn0 = find(Metrics(:,1) > 0);   %non zero rows
+        MetricsMean = [MetricsMean;mean(Metrics(rn0,1:numFeat-1)) mean(Metrics(:,numFeat))]; 
+
         clear Metrics
     
     end

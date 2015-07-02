@@ -7,8 +7,8 @@ clearvars -except muH sdH MuPsih SdPsih Sall ccoeff pccoeff CIfig ICIfig Featplo
 load PsiHOne.mat    %load muPsiH and sdPsiH for One feature Z-scores
 
 %Load Data from all training sessions
-patient = 2;    %Xpatient # for plot
-datapath = './MetricsData/Patients/R10/Detailed/';
+patient = 4;    %Xpatient # for plot
+datapath = './MetricsData/Patients/R15/Detailed/';
 filenames = dir(strcat(datapath,'*.mat'));
 Nsessions = length(filenames);  %total # of training sessions
 Datawmean = [];                 %weighted avg metrics across walk sections
