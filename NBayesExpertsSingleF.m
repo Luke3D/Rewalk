@@ -1,5 +1,5 @@
 %Compute Features for NaiveBayes Model
-clearvars -except IpOne
+clearvars -except IpOne IponeAll
 %Features
 % 1. Step Frequency
 % 2. StdDev of frontal tilt
@@ -9,7 +9,7 @@ clearvars -except IpOne
 %Features to use
 Features = [1 2 3 4];
 FeatureNames = {'Step F','Sd phi','Energy/Step','Nsteps'};
-symb = {'b-o','r-s','c-*','m-x'}; %symbol used to plot data for that patient
+symb = {'b-o','r-o','c-o','m-o'}; %symbol used to plot data for that patient
 
 %healthy data
 datapath = './MetricsData/Experts/All/';
@@ -18,12 +18,14 @@ MetricsMeanAll(3,:) = [];
 Nsubj = size(MetricsMeanAll,1);
 
 %Patient Data
-Patient = 'R10';
-patient = 2;    %code for saving data
+Patient = 'R09';
+patient = 1;    %code for saving data
 datapath_patients = './MetricsData/NaiveBayes/Patients/';
 %load metrics data (one patient)
 Metricswmean = load([datapath_patients Patient '_Metricswmean.mat']); %matrix with results from each training session
 Metricswmean = Metricswmean.Datawmean;    %features for the patient each training session (row)
+Metricsall = load([datapath_patients Patient '_Metricsall.mat']); %Features for each minute
+Metricsall = Metricsall.DataAll;
 
 
 for f=1:length(Features)
@@ -78,24 +80,21 @@ for f=1:length(Features)
     
     %Index for each train sessions
     for s = 1:Nsessions
-        
-%         %%correct Healthy step Freq for R10 from session 4
-%         if strcmp(Patient,'R10') && s==4 && Features(f)==1
-%             f0max = (1+0.25)^(-1);  %based on Healthy Settings
-%             f1max = (0.78+0.225)^(-1); %based on mean R10 settings
-%             muH = muH*(f1max/f0max);
-%             sdH = sdH*(f1max/f0max);
-%         end
-    
+            
         Xps = Xp(s,:);        %features for session s
-        
-        %Threshold features larger than healthy (StepF,Wratio,Nsteps)
-        if Features(f) == 1 || Features(f) == 5 || Features(f) == 6
-            Xps = min(Xps,muH);
-        end
-        
         logPp(s) = -sum( 0.5*log(2*pi*sdH.^2) + ((Xps-muH).^2)./(2*sdH.^2) );  %sum of Z-scores
         Ip(s,f) = (logPp(s)-MuPsih)./SdPsih;  %Expertiese index for session s when using feature f
+    end
+    
+    %z-score for each minute
+    %Index for each train sessions
+    for s = 1:Nsessions
+        
+        Xps = Metricsall{s}(:,f);        %feature f for session s for each minute
+        for ss = 1:size(Xps,1)           
+            logPp = -sum( 0.5*log(2*pi*sdH.^2) + ((Xps(ss,:)-muH).^2)./(2*sdH.^2) );  %sum of Z-scores
+            IpAll{s}(ss,f) = (logPp-MuPsih)./SdPsih;  %z-score for each minute of session s and each session
+        end
     end
     
     figure(2), hold on
@@ -103,5 +102,6 @@ for f=1:length(Features)
     plot(1:Nsessions,Ip(:,f),symb{patient},'Linewidth',2,'MarkerSize',6);
     
 end
-IpOne{patient} = Ip;
+IpOne{patient} = Ip;        %z-score for each session and feature
+IponeAll{patient} = IpAll;  %z-score for each 1 minute window and each session
 save('PsiHOne.mat','MuPsihOne','SdPsihOne');

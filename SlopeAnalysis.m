@@ -3,8 +3,8 @@ close all
 clear all
 % symb = {'b-o','r-s','c-*','m-x'}; %symbol used to plot data for that patient
 symb = {'b-o','r-o','c-o','m-o'}; %symbol used to plot data for that patient
-load IpMultiTHR.mat
-load IpOneTHR.mat
+load ./matFiles/IpMultiTHR.mat
+load ./matFiles/IpOneTHR.mat
 OneFeat = 4; %what single feature is used
 Nboot = 999;
 %MULTI FEATURES 

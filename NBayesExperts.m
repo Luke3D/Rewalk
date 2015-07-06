@@ -64,9 +64,10 @@ AX = plotmatrix(X);
 %% Compute Expertise Index on Patients
 
 %load metrics data (one patient)
-symb = {'b-o','r-s','c-*','m-x'}; %symbol used to plot data for that patient
-patient = 2;    %code for saving data
-Patient = 'R10';
+clear Ip
+symb = {'b-o','r-o','c-o','m-o'}; %symbol used to plot data for that patient
+patient = 4;    %code for saving data
+Patient = 'R15';
 datapath_patients = './MetricsData/NaiveBayes/Patients/';
 Metricswmean = load([datapath_patients Patient '_MetricswMean.mat']); %matrix with results from each training session
 Xp = Metricswmean.Datawmean;    %features for the patient each training session (row)
@@ -75,16 +76,9 @@ Nsessions = size(Xp,1);
 
 %Index for each train sessions
 for s = 1:Nsessions
-    
-    
+       
     Xps = Xp(s,:);        %features for session s
-    
-%     %Threshold features larger than healthy (StepF,Wratio,Nsteps)
-%     Xps(1) = min(Xps(1),muH(1));
-%     Xps(4) = min(Xps(4),muH(4));
-%     Xps(5) = min(Xps(5),muH(5));
-%     
-    
+      
     logPp(s) = -sum( 0.5*log(2*pi*sdH.^2) + ((Xps-muH).^2)./(2*sdH.^2) );  %sum of Z-scores
     Ip(s) = (logPp(s)-MuPsih)./SdPsih;  %Expertiese index for session s
 end
@@ -92,5 +86,32 @@ end
 figure('name','Expertise index'), hold on
 plot(1:Nsessions,Ip,symb{patient},'Linewidth',2,'MarkerSize',6);
 
-%save z-score Index for current patient
+%save z-score and std deviation for each session for current patient
 IpMulti{patient} = Ip;
+
+%% Compute z-score for each 1 min window across all sessions
+clear Ip Ipmean
+symb = {'b-o','r-o','c-o','m-o'}; %symbol used to plot data for that patient
+patient = 4;    %code for saving data
+Patient = 'R15';
+datapath_patients = './MetricsData/NaiveBayes/Patients/';
+Metricsall = load([datapath_patients Patient '_Metricsall.mat']); %matrix with results from each training session
+Xp = Metricsall.DataAll;    %features for the patient each training session (row)
+Nsessions = size(Xp,2);
+
+%Index for each train sessions
+for s = 1:Nsessions
+       
+    Xps = Xp{s};        %features for session s
+    for ss = 1:size(Xps,1)
+        logPp = -sum( 0.5*log(2*pi*sdH.^2) + ((Xps(ss,:)-muH).^2)./(2*sdH.^2) );  %sum of Z-scores
+        Ip{s}(ss,1) = (logPp-MuPsih)./SdPsih;  %z-score for each minute of session s
+    end
+    plot(s,cell2mat(Ipmean),'Linewidth',2,'MarkerSize',6);
+    Ipmean{s} = mean(Ip{s})
+end
+
+plot(1:Nsessions,cell2mat(Ipmean),'Linewidth',2,'MarkerSize',6);
+
+IpMultiAll{patient} = Ip;
+
