@@ -98,6 +98,7 @@ datapath_patients = './MetricsData/NaiveBayes/Patients/';
 Metricsall = load([datapath_patients Patient '_Metricsall.mat']); %matrix with results from each training session
 Xp = Metricsall.DataAll;    %features for the patient each training session (row)
 Nsessions = size(Xp,2);
+Ipmean = {};
 
 %Index for each train sessions
 for s = 1:Nsessions
@@ -115,3 +116,18 @@ plot(1:Nsessions,cell2mat(Ipmean),'Linewidth',2,'MarkerSize',6);
 
 IpMultiAll{patient} = Ip;
 
+%% Bootstrap z-scores over 1 min windows
+%Combine sessions into blocks
+Xpnew = Xp{p};
+Sxb = 2; %# of sessions per block
+Nb = floor(length(Im)/Sxb);  %# of blocks
+Nbb = mod(length(Im),Sxb);
+for b = 1:Nb
+    Imnew{b} = cell2mat( Im((b*Sxb)-1:(b*Sxb))' );
+end
+if Nbb > 0
+    Imnew{end} = [Imnew{end};cell2mat(Im(end))];
+end
+
+IponeAll{p} = Imnew;    %restructured in blocks
+    

@@ -7,16 +7,16 @@ symb = {'b-o','r-o','c-o','m-o'}; %symbol used to plot data for that patient
 load ./matFiles/IpMultiExpertsAll.mat
 load ./matFiles/IpOneExpertsAll.mat
 OneFeat = 4; %what single feature is used
+Sxb = 2; %# of sessions per block
 Nboot = 999;
 %ONE FEATURE
 figure,subplot(121),  hold on,  title('Z_{\psi} - Steps only')
 for p = 1:length(IponeAll)
     
-    clear muz sdz Imnew
+    clear muz sdz sem Imnew
     
     %Combine sessions into blocks
     Im = IponeAll{p};
-    Sxb = 2; %# of sessions per block
     Nb = floor(length(Im)/Sxb);  %# of blocks  
     Nbb = mod(length(Im),Sxb);
     for b = 1:Nb
@@ -24,19 +24,30 @@ for p = 1:length(IponeAll)
     end
     if Nbb > 0
         Imnew{end} = [Imnew{end};cell2mat(Im(end))];
-    end
-    
+    end   
     IponeAll{p} = Imnew;    %restructured in blocks
     
     Ns = length(IponeAll{p});
     for s = 1:Ns
        muz(s) = mean(IponeAll{p}{s}(:,OneFeat));
        sdz(s) = std(IponeAll{p}{s}(:,OneFeat));
+       sem(s) = sdz(s)/sqrt(size(IponeAll{p}{s},1));
     end
         
     %plot mean and std dev of z-score for each session
     errorbar(1:Ns,muz,sdz,symb{p},'Linewidth',2), 
-%     ylim([-1000 20])   
+    ylim([-600 40])   
+
+    %compute effect size and sem of effect size (for measure 1)
+    snr1(1,p) = mean(diff(muz)./sem(2:end));
+    semsnr1(1,p) = std( diff(muz)./sem(2:end) ) / sqrt(length(sem(2:end)));
+    snr2(1,p) = mean(diff(muz))/mean(sem(2:end));
+    %bootstrap z-score to obtain 90% CI
+    %CI
+%     bootstat1 = bootstrp(Nboot,@SSimpro,SSI'); %bootstat1=bootstat1(~isinf(bootstat1));
+%     SSIm2(1,p) = mean(bootstat1); SSIm2SE(1,p) = std(bootstat1);
+%     SSIm2CI(:,p,1) = bootci(Nboot,{@SSimpro,SSI'},'alpha',0.1);
+
 end
 set(gca,'FontSize',14)
 set(findall(gcf,'type','text'),'fontSize',14), %ylim([-1000 20])
@@ -50,11 +61,10 @@ line([0 Ns + 2],[-2 -2],'LineWidth',1,'Color',[0 0.7 0])
 subplot(122),  hold on,  title('Z_{\psi} - All features')
 for p = 1:length(IpMultiAll)
     
-    clear muz sdz Imnew
+    clear muz sdz sem Imnew
     
-    %Combine sessions into blocks
+%     %Combine sessions into blocks
     Im = IpMultiAll{p};
-    Sxb = 2; %# of sessions per block
     Nb = floor(length(Im)/Sxb);  %# of blocks  
     Nbb = mod(length(Im),Sxb);
     for b = 1:Nb
@@ -63,7 +73,6 @@ for p = 1:length(IpMultiAll)
     if Nbb > 0
         Imnew{end} = [Imnew{end};cell2mat(Im(end))];
     end
-    
     IpMultiAll{p} = Imnew;    %restructured in blocks
     
     
@@ -71,12 +80,20 @@ for p = 1:length(IpMultiAll)
     for s = 1:Ns
        muz(s) = mean(IpMultiAll{p}{s});
        sdz(s) = std(IpMultiAll{p}{s});
+       sem(s) = sdz(s)/sqrt(size(IpMultiAll{p}{s},1));
     end
-        
+    
     %plot mean and std dev of z-score for each session
-    errorbar(1:Ns,muz,sdz,symb{p},'Linewidth',2), 
-%     ylim([-1000 20])   
-
+    errorbar(1:Ns,muz,sdz,symb{p},'Linewidth',2),
+    ylim([-600 40])   
+    
+    %compute effect size and sem of effect size (for measure 1)
+    snr1(2,p) = mean( diff(muz)./sem(2:end) );
+    semsnr1(2,p) = std( diff(muz)./sem(2:end) ) / sqrt(length(sem(2:end)));
+    snr2(2,p) = mean(diff(muz))/mean(sem(2:end));
+    
+    
+    
 end
 set(gca,'FontSize',14)
 set(findall(gcf,'type','text'),'fontSize',14), %ylim([-1000 20])
@@ -85,6 +102,22 @@ xlabel('Block #'), ylabel('Z-score')
 legend('P01','P02','P03','P04')
 line([0 Ns + 2],[2 2],'LineWidth',1,'Color',[0 0.7 0])
 line([0 Ns + 2],[-2 -2],'LineWidth',1,'Color',[0 0.7 0])
+
+%plot effect size
+figure, hold on
+bp = bar(snr1');
+set(bp(1),'FaceColor',[1 0 0]);
+set(bp(2),'FaceColor',[0 0.8 0]);
+errorbar((1:4)-0.1,snr1(1,:),semsnr1(1,:),'ok','LineWidth',1)
+errorbar((1:4)+0.1,snr1(2,:),semsnr1(2,:),'ok','LineWidth',1)
+set(gca,'Xtick',1:4), %ylim([-0.2 1])
+
+figure, hold on
+bp = bar(snr2');
+set(bp(1),'FaceColor',[1 0 0]);
+set(bp(2),'FaceColor',[0 0.8 0]);
+set(gca,'Xtick',1:4), %ylim([-0.2 1])
+
 
 %% Use mean across 6 1-minute windows
 load ./matFiles/IpMultiExperts.mat
@@ -181,7 +214,7 @@ set(gca,'FontSize',24)
 set(findall(gcf,'type','text'),'fontSize',24), %ylim([-1000 20])
 set(findall(gca,'type','text'),'fontSize',24), %ylim([-1000 20])
 xlabel('Patient #'), ylabel('Z-score sensitivity \gamma'), 
-legend('All features','Walk Time only')
+legend('All features','Steps only')
 
 %Relative
 % figure, hold on
