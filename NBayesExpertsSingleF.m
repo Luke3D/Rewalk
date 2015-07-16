@@ -18,8 +18,8 @@ MetricsMeanAll(3,:) = [];
 Nsubj = size(MetricsMeanAll,1);
 
 %Patient Data
-Patient = 'R09';
-patient = 1;    %code for saving data
+Patient = 'R15';
+patient = 4;    %code for saving data
 datapath_patients = './MetricsData/NaiveBayes/Patients/';
 %load metrics data (one patient)
 Metricswmean = load([datapath_patients Patient '_Metricswmean.mat']); %matrix with results from each training session
@@ -103,5 +103,5 @@ for f=1:length(Features)
     
 end
 IpOne{patient} = Ip;        %z-score for each session and feature
-IponeAll{patient} = IpAll;  %z-score for each 1 minute window and each session
+IponeAll{patient} = IpAll  %z-score for each 1 minute window and each session
 save('PsiHOne.mat','MuPsihOne','SdPsihOne');

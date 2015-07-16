@@ -31,8 +31,8 @@ acc = accraw;
 % Starttime = [TestTimes{num,1} ':00.000']; 
 % Endtime = [TestTimes{num,2} ':00.000'];
 
-Starttime = '14:51:00.000';
-Endtime = '14:58:00.000';
+Starttime = '11:33:00.000';
+Endtime = '11:40:00.000';
 
 i = 0; t = 0;
 while i == 0

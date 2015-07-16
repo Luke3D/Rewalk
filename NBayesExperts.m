@@ -66,8 +66,8 @@ AX = plotmatrix(X);
 %load metrics data (one patient)
 clear Ip
 symb = {'b-o','r-o','c-o','m-o'}; %symbol used to plot data for that patient
-patient = 4;    %code for saving data
-Patient = 'R15';
+patient = 2;    %code for saving data
+Patient = 'R10';
 datapath_patients = './MetricsData/NaiveBayes/Patients/';
 Metricswmean = load([datapath_patients Patient '_MetricswMean.mat']); %matrix with results from each training session
 Xp = Metricswmean.Datawmean;    %features for the patient each training session (row)
@@ -92,8 +92,8 @@ IpMulti{patient} = Ip;
 %% Compute z-score for each 1 min window across all sessions
 clear Ip Ipmean
 symb = {'b-o','r-o','c-o','m-o'}; %symbol used to plot data for that patient
-patient = 4;    %code for saving data
-Patient = 'R15';
+% patient = 4;    %code for saving data
+% Patient = 'R15';
 datapath_patients = './MetricsData/NaiveBayes/Patients/';
 Metricsall = load([datapath_patients Patient '_Metricsall.mat']); %matrix with results from each training session
 Xp = Metricsall.DataAll;    %features for the patient each training session (row)
@@ -108,26 +108,16 @@ for s = 1:Nsessions
         logPp = -sum( 0.5*log(2*pi*sdH.^2) + ((Xps(ss,:)-muH).^2)./(2*sdH.^2) );  %sum of Z-scores
         Ip{s}(ss,1) = (logPp-MuPsih)./SdPsih;  %z-score for each minute of session s
     end
-    plot(s,cell2mat(Ipmean),'Linewidth',2,'MarkerSize',6);
-    Ipmean{s} = mean(Ip{s})
+%     plot(s,cell2mat(Ipmean),'Linewidth',2,'MarkerSize',6);
+%     Ipmean{s} = mean(Ip{s})
 end
 
-plot(1:Nsessions,cell2mat(Ipmean),'Linewidth',2,'MarkerSize',6);
+% plot(1:Nsessions,cell2mat(Ipmean),'Linewidth',2,'MarkerSize',6);
 
-IpMultiAll{patient} = Ip;
+IpMultiAll{patient} = Ip
 
-%% Bootstrap z-scores over 1 min windows
-%Combine sessions into blocks
-Xpnew = Xp{p};
-Sxb = 2; %# of sessions per block
-Nb = floor(length(Im)/Sxb);  %# of blocks
-Nbb = mod(length(Im),Sxb);
-for b = 1:Nb
-    Imnew{b} = cell2mat( Im((b*Sxb)-1:(b*Sxb))' );
-end
-if Nbb > 0
-    Imnew{end} = [Imnew{end};cell2mat(Im(end))];
-end
+%% Bootstrap last 2 sessions to compute CI of z-score
+XEOT = cell2mat(Xp(end-1:end)');
+N = size(XEOT,1)
+[bootstat,bootsam] = bootstrp(100,'Zscore',XEOT,repmat(muH,[N 1]),repmat(sdH,[N 1]),MuPsih,SdPsih)
 
-IponeAll{p} = Imnew;    %restructured in blocks
-    
