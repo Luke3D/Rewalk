@@ -8,10 +8,12 @@
 clearvars -except IpMulti FigfeatH
 % Features = [1 2 3 4];
 datapath = './MetricsData/Experts/All/';
-load(strcat(datapath,'MetricsMeanAll.mat'))
+load(strcat(datapath,'MetricsMeanAll.mat')) %mean features across 6 minutes
+load(strcat(datapath,'MetricsAll.mat')) %feature values for each minute
 
 % X = MetricsMeanAll(:,Features);
 X = MetricsMeanAll;
+X1min = MetricsAll;
 Nsubj = size(X,1);
 
 %Compute sum of Z-scores (GNB) for each subject (compared to the others)
@@ -42,7 +44,7 @@ else
     figure, hold on
 end
 
-bp = boxplot(I), ylabel('z-score z \psi');
+bp = boxplot(I), ylabel('z-score z_{\Psi_h}','Interpreter','latex');
 set(bp(:),'LineWidth',2)
 set(gca,'FontSize',16)
 set(findall(gcf,'type','text'),'fontSize',16)
@@ -59,6 +61,37 @@ sdH = nanstd(X);
 %show covariance matrix of selected features
 figure
 AX = plotmatrix(X);
+
+%% Analysis for each minute 
+
+%covariance matrix for each minute
+figure
+FeatureNames = {'Step F [Hz]','Sd \phi [deg]','Energy [counts]','Steps'};
+Features = [1 2 3 4];    
+Fontsize = 10;
+[H,AX,BigAx,P,PAx] = plotmatrix(X1min,'og');
+set(H,'Color',[0 0.8 0])
+set(P,'FaceColor',[0 0.8 0])
+set(H,'MarkerFaceColor',[0 0.8 0])
+set(H,'MarkerSize',6)
+
+
+%INCREASE NUMBER OF BINS OF HISTOGRAMS
+for i = 1:length(Features)
+    ylabel(AX(i),FeatureNames{Features(i)},'FontSize',Fontsize)
+    xlabel(AX(4,i),FeatureNames{Features(i)},'FontSize',Fontsize)
+    set(AX(i),'FontSize',Fontsize)
+    set(AX(4,i),'FontSize',Fontsize)
+%     histogram(AX(i,i),X1min(:,i),30)
+end
+%set axis limits as for healthy plot
+% if exist('XlimH','var')
+%     for a = 1:size(AX,1)*size(AX,2)
+%         set(AX(a),'XLim',XlimH{a})
+%         set(AX(a),'YLim',YlimH{a})
+%     end
+% end
+
 
 
 %% Compute Expertise Index on Patients

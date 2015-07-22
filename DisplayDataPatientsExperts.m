@@ -39,29 +39,29 @@ for s = 1:Nsessions
 end
 
 %show covariance matrix of selected features
-% if ~exist('Covplot','var')
-%     Covplot = figure;
-%     hold on
-% else
-%     figure(Covplot); hold on
-% end
-% [H,AX,BigAx,P,PAx] = plotmatrix(DataAllMatrix(:,Features),'or');
-% set(H,'Color','r')
-% set(P,'FaceColor','r')
-% 
-% for i = 1:length(Features)
-%     ylabel(AX(i),FeatureNames{Features(i)},'FontSize',16)
-%     xlabel(AX(4,i),FeatureNames{Features(i)},'FontSize',16)
-%     set(AX(i),'FontSize',15)
-%     set(AX(4,i),'FontSize',15)
-% end
-% %set axis limits as for healthy plot
-% if exist('XlimH','var')
-%     for a = 1:size(AX,1)*size(AX,2)
-%         set(AX(a),'XLim',XlimH{a})
-%         set(AX(a),'YLim',YlimH{a})
-%     end
-% end
+if ~exist('Covplot','var')
+    Covplot = figure;
+    hold on
+else
+    figure(Covplot); hold on
+end
+[H,AX,BigAx,P,PAx] = plotmatrix(DataAllMatrix(:,Features),'or');
+set(H,'Color','r')
+set(P,'FaceColor','r')
+
+for i = 1:length(Features)
+    ylabel(AX(i),FeatureNames{Features(i)},'FontSize',16)
+    xlabel(AX(4,i),FeatureNames{Features(i)},'FontSize',16)
+    set(AX(i),'FontSize',15)
+    set(AX(4,i),'FontSize',15)
+end
+%set axis limits as for healthy plot
+if exist('XlimH','var')
+    for a = 1:size(AX,1)*size(AX,2)
+        set(AX(a),'XLim',XlimH{a})
+        set(AX(a),'YLim',YlimH{a})
+    end
+end
 
 
 
