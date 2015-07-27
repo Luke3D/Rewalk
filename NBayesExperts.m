@@ -92,6 +92,41 @@ end
 %     end
 % end
 
+%correlation of features
+[rho,prho] = corr(X1min);
+
+%plot separate histograms for features with a normal distribution overlaid
+
+%remove steps outliers
+X1min([53 54 63],:) = [];
+fig1 = figure;
+fig2 = figure;
+bins = [11 8 11 11];
+for f = 1:4
+x1 = X1min(:,f);
+pd1 = fitdist(x1,'Normal'); mu1 = pd1.mean; sd1 = pd1.sigma;
+x1pdf = mu1-3*sd1:4*sd1/20:mu1+3*sd1;
+y1pdf = pdf(pd1,x1pdf);
+figure(fig1); hold on
+subplot(2,2,f), hold on, title(FeatureNames{f})
+h1 = histogram(x1,bins(f)); scale = max(h1.Values)/max(y1pdf);
+plot(x1pdf,y1pdf.*scale)
+hold off
+
+figure(fig2); hold on
+subplot(2,2,f);
+z1 = (x1-mu1)./sd1;
+h = kstest(z1)
+[fcdf,x_values] = ecdf(z1);
+F = plot(x_values,fcdf);
+set(F,'LineWidth',2);
+hold on;
+G = plot(x_values,normcdf(x_values,0,1),'r-');
+set(G,'LineWidth',2);
+legend([F G],...
+       'Empirical CDF','Standard Normal CDF',...
+       'Location','SE');
+end
 
 
 %% Compute Expertise Index on Patients
@@ -99,8 +134,8 @@ end
 %load metrics data (one patient)
 clear Ip
 symb = {'b-o','r-o','c-o','m-o'}; %symbol used to plot data for that patient
-patient = 2;    %code for saving data
-Patient = 'R10';
+patient = 1;    %code for saving data
+Patient = 'R09';
 datapath_patients = './MetricsData/NaiveBayes/Patients/';
 Metricswmean = load([datapath_patients Patient '_MetricswMean.mat']); %matrix with results from each training session
 Xp = Metricswmean.Datawmean;    %features for the patient each training session (row)
