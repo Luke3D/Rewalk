@@ -2,7 +2,9 @@
 close all
 clear all
 symb = {'b-o','r-o','c-o','m-o'}; %symbol used to plot data for that patient
-
+colorsymb = { [    0    0.4470    0.7410];
+    [0.8500    0.3250    0.0980];  [0.9290    0.6940    0.1250];
+    [0.4940    0.1840    0.5560]};  %colors for each patient
 %% Use each minute window
 load ./matFiles/IpMultiExpertsAll.mat
 load ./matFiles/IpOneExpertsAll.mat
@@ -51,7 +53,7 @@ for p = 1:length(IponeAll)
     
     %plot mean and std dev of z-score for each session
     figure(Zfig), subplot(121),  hold on,  title('Z_{\psi} - Steps only')
-    errorbar(1:Ns,muz,sdz,symb{p},'Linewidth',2),   %error bars = std dev
+    errorbar(1:Ns,muz,sdz,'o-','Color',colorsymb{p},'Linewidth',2),   %error bars = std dev
 %     errorbar(1:Ns,muz,1.96*sdz/sqrt(size(IponeAll{p}{s},1)),symb{p},'Linewidth',2), %error bars = sem
     ylim([-600 40])
     
@@ -74,7 +76,7 @@ set(gca,'FontSize',14)
 set(findall(gcf,'type','text'),'fontSize',14), %ylim([-1000 20])
 set(findall(gca,'type','text'),'fontSize',14), %ylim([-1000 20])
 xlabel('Block #'), ylabel('Z-score')
-legend('P01','P02','P03','P04')
+legend('R09','R10','R11','R15')
 line([0 Ns + 2],[2 2],'LineWidth',1,'Color',[0 0.7 0])
 line([0 Ns + 2],[-2 -2],'LineWidth',1,'Color',[0 0.7 0])
 
@@ -118,7 +120,7 @@ for p = 1:length(IpMultiAll)
     
     %plot mean and std dev of z-score for each session
     figure(Zfig),subplot(122),  hold on,  title('Z_{\psi} - All features')
-    errorbar(1:Ns,muz,sdz,symb{p},'Linewidth',2),
+    errorbar(1:Ns,muz,sdz,'o-','Color',colorsymb{p},'Linewidth',2),
     %     errorbar(1:Ns,muz,1.96*sdz/sqrt(size(IpMultiAll{p}{s},1)),symb{p},'Linewidth',2),
     ylim([-600 40])
     
@@ -145,7 +147,7 @@ set(gca,'FontSize',14)
 set(findall(gcf,'type','text'),'fontSize',14), %ylim([-1000 20])
 set(findall(gca,'type','text'),'fontSize',14), %ylim([-1000 20])
 xlabel('Block #'), ylabel('Z-score')
-legend('P01','P02','P03','P04')
+% legend('P01','P02','P03','P04')
 line([0 Ns + 2],[2 2],'LineWidth',1,'Color',[0 0.7 0])
 line([0 Ns + 2],[-2 -2],'LineWidth',1,'Color',[0 0.7 0])
 
