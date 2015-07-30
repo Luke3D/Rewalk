@@ -62,6 +62,18 @@ sdH = nanstd(X);
 figure
 AX = plotmatrix(X);
 
+%plot normal distribution of Z for experts
+muZ = mean(I);
+sdZ = std(I);
+pdH = makedist('Normal',muZ,sdZ);
+xpdH = muZ-3*sdZ:4*sdZ/20:muZ+3*sdZ;
+ypdH = pdf(pdH,xpdH);
+figure, hold on
+plot(xpdH,ypdH./max(ypdH))
+plot(I,zeros(length(I)),'o')           %use average from 6 mins
+xlabel('z-score'), ylabel('p(Z_\{psi})')
+
+
 %% Analysis for each minute 
 
 %covariance matrix for each minute
@@ -98,7 +110,7 @@ end
 %plot separate histograms for features with a normal distribution overlaid
 
 %remove steps outliers
-X1min([53 54 63],:) = [];
+% X1min([53 54 63],:) = [];
 fig1 = figure;
 fig2 = figure;
 bins = [11 8 11 11];
@@ -109,9 +121,11 @@ x1pdf = mu1-3*sd1:4*sd1/20:mu1+3*sd1;
 y1pdf = pdf(pd1,x1pdf);
 figure(fig1); hold on
 subplot(2,2,f), hold on, title(FeatureNames{f})
-h1 = histogram(x1,bins(f)); scale = max(h1.Values)/max(y1pdf);
-plot(x1pdf,y1pdf.*scale)
+h1 = histogram(x1,bins(f)); scale(f) = max(h1.Values)/max(y1pdf);
+plot(x1pdf,y1pdf.*scale(f))
 hold off
+muH2(f) = mu1;  %mean and std deviation of the normal distr. fitted on all the samples
+sdH2(f) = sd1;
 
 figure(fig2); hold on
 subplot(2,2,f);
@@ -128,7 +142,24 @@ legend([F G],...
        'Location','SE');
 end
 
-
+%plot distribution with muH and sdH as parameters 
+% bins = [11 8 11 30];
+figure
+for f = 1:4
+pd = makedist('Normal',muH(f),sdH(f));
+x1 = X1min(:,f);
+x1pdf = muH(f)-3*sdH(f):4*sdH(f)/20:muH(f)+3*sdH(f);
+y1pdf = pdf(pd,x1pdf);
+subplot(2,2,f), hold on, xlabel(FeatureNames{f}), ylabel('p(x)')
+%histogram
+% h1 = histogram(x1,bins(f));                   %use data from each min
+% scale(f) = max(h1.Values)/max(y1pdf);
+plot(x1pdf,y1pdf.*scale(f))
+%scatter plot
+plot(X(:,f),zeros(size(X,1)),'o')           %use average from 6 mins
+% plot(X1min(:,f),zeros(size(X1min,1)),'o')   %use data from each min
+end
+hold off
 %% Compute Expertise Index on Patients
 
 %load metrics data (one patient)
