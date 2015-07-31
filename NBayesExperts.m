@@ -7,6 +7,9 @@
 
 clearvars -except IpMulti FigfeatH
 % Features = [1 2 3 4];
+
+nbins=[10 10 10 30];
+
 datapath = './MetricsData/Experts/All/';
 load(strcat(datapath,'MetricsMeanAll.mat')) %mean features across 6 minutes
 load(strcat(datapath,'MetricsAll.mat')) %feature values for each minute
@@ -90,10 +93,17 @@ set(H,'MarkerSize',6)
 
 %INCREASE NUMBER OF BINS OF HISTOGRAMS
 for i = 1:length(Features)
+    
+    hold(PAx(i), 'on')
+    cla(PAx(i))
+    
     ylabel(AX(i),FeatureNames{Features(i)},'FontSize',Fontsize)
     xlabel(AX(4,i),FeatureNames{Features(i)},'FontSize',Fontsize)
     set(AX(i),'FontSize',Fontsize)
     set(AX(4,i),'FontSize',Fontsize)
+    
+    h=histogram(PAx(i),X1min(:,i),nbins(i))
+    h.FaceColor=[0 0.8 0];
 %     histogram(AX(i,i),X1min(:,i),30)
 end
 %set axis limits as for healthy plot
