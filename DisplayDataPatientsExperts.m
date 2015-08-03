@@ -136,21 +136,21 @@ for patient=1:length(Patients)
         subplot(2,2,f), hold on
         %Healthy mean
         if exist('muH','var') & patient==1
-            h1=area(0:length(Datab)+1,repmat(muH(f)+sdH(f),[length(Datab)+2, 1]),muH(f));
-            area(0:length(Datab)+1,repmat(muH(f)-sdH(f),[length(Datab)+2, 1]),muH(f))
+            h1=area(0:length(Datab)+1,repmat(muH(f)+2*sdH(f),[length(Datab)+2, 1]),muH(f),'FaceColor',[.76 .87 .78],'EdgeColor',[.23 .34 .44]);
+            area(0:length(Datab)+1,repmat(muH(f)-2*sdH(f),[length(Datab)+2, 1]),muH(f),'FaceColor',[.76 .87 .78],'EdgeColor',[.23 .34 .44])
             h2=plot(0:length(Datab)+1,repmat(muH(f),[length(Datab)+2, 1]),'-.','Color',[0.4660 0.6740 0.1880],'Linewidth',2);
         end
 
         cif = reshape(ci(:,Features(f),:),[2 length(Datab)]); %confidence intervals for feature f
 
         ylabel(FeatureNames{Features(f)}) % ylim(ylimFeat{f})
-        plot(1:length(Datab),fm(:,Features(f)),'o','Color',colorsymb{patient},'Linewidth',2,'MarkerSize',6);
+        plot(1:length(Datab),fm(:,Features(f)),'o','MarkerFaceColor',colorsymb{patient},'Color',colorsymb{patient},'MarkerEdgeColor',colorsymb{patient},'Linewidth',2,'MarkerSize',6);
 
         %fit linear model to the data
         linfit(:,f)=glmfit(1:length(Datab),fm(:,Features(f))); %fit on blocks of 2 sessions
         S(f)=linfit(2,f); %slope of the line for feature f z
         %plot linear fit
-        h_temp=plot(1:length(Datab),glmval(linfit(:,f),1:length(Datab),'identity'),'Color',colorsymb{patient},'LineWidth',2)
+        h_temp=plot(1:length(Datab),glmval(linfit(:,f),1:length(Datab),'identity'),'MarkerFaceColor',colorsymb{patient},'Color',colorsymb{patient},'MarkerEdgeColor',colorsymb{patient},'LineWidth',2)
 
         assignin('base',['h' num2str(patient+2)],h_temp);
             
@@ -176,7 +176,7 @@ for patient=1:length(Patients)
 
     end
 end
-legend([h1 h2 h3 h4 h5 h6])
+legend([h1 h2 h3 h4 h5 h6],{'+/-2 sd from expert mean' 'expert mean' 'R09' 'R10' 'R11' 'R15'})
 
 
 %% add plot with slope values for each feature

@@ -224,14 +224,22 @@ for p =1:4
     sd1= std(Z1);
     sdAll=std(ZM);
     subplot(121), hold on
-    errorbar(p,mu1,sd1,symb{p},'Linewidth',2,'MarkerSize',6)
+    if p==1 % only add shaded +/- 2 sd once
+        area([.5,4.5],[2,2],'FaceColor',[.76 .87 .78],'EdgeColor',[.23 .34 .44])
+        area([.5,4.5],[-2,-2],'FaceColor',[.76 .87 .78],'EdgeColor',[.23 .34 .44])
+    end
+    errorbar(p,mu1,sd1,'Color',colorsymb{p},'Linewidth',2,'MarkerSize',6,'Marker','o')
     subplot(122), hold on
-    errorbar(p,muAll,sdAll,symb{p},'Linewidth',2,'MarkerSize',6)
+    if p==1
+        area([.5,4.5],[2,2],'FaceColor',[.76 .87 .78],'EdgeColor',[.23 .34 .44])
+        area([.5,4.5],[-2,-2],'FaceColor',[.76 .87 .78],'EdgeColor',[.23 .34 .44])
+    end
+    errorbar(p,muAll,sdAll,'Color',colorsymb{p},'Linewidth',2,'MarkerSize',6,'Marker','o')
 end
 
 subplot(121), hold on
-plot([.5,4.5],[2,2],'g','Linewidth',2,'MarkerSize',6)
-plot([.5,4.5],[-2,-2],'g','Linewidth',2,'MarkerSize',6)
+% plot([.5,4.5],[2,2],'g','Linewidth',2,'MarkerSize',6)
+% plot([.5,4.5],[-2,-2],'g','Linewidth',2,'MarkerSize',6)
 title('Steps Only')
 xlabel('Patient Code')
 ylabel('Z-score')
@@ -240,8 +248,8 @@ xlim([.5,4.5])
 set(gca,'XTickLabel',{'R09', 'R10', 'R11', 'R15'})
 
 subplot(122), hold on
-plot([.5,4.5],[2,2],'g','Linewidth',2,'MarkerSize',6)
-plot([.5,4.5],[-2,-2],'g','Linewidth',2,'MarkerSize',6)
+% plot([.5,4.5],[2,2],'g','Linewidth',2,'MarkerSize',6)
+% plot([.5,4.5],[-2,-2],'g','Linewidth',2,'MarkerSize',6)
 title('All Features')
 xlabel('Patient Code')
 ylabel('Z-score')
