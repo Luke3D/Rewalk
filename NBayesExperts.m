@@ -143,7 +143,7 @@ legend([F G],...
 end
 
 %plot distribution with muH and sdH as parameters 
-% bins = [11 8 11 30];
+bins = [11 8 11 30];
 figure
 for f = 1:4
 pd = makedist('Normal',muH(f),sdH(f));
@@ -154,7 +154,7 @@ subplot(2,2,f), hold on, xlabel(FeatureNames{f}), ylabel('p(x)')
 %histogram
 % h1 = histogram(x1,bins(f));                   %use data from each min
 % scale(f) = max(h1.Values)/max(y1pdf);
-plot(x1pdf,y1pdf.*scale(f))
+plot(x1pdf,y1pdf./max(y1pdf))
 %scatter plot
 plot(X(:,f),zeros(size(X,1)),'o')           %use average from 6 mins
 % plot(X1min(:,f),zeros(size(X1min,1)),'o')   %use data from each min
