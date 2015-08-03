@@ -197,7 +197,65 @@ for p =1:4
     [pM,hM] = signrank(ZM+2,[],'tail','left','alpha',0.05) 
 end
 
+stderror=figure;
+for p =1:4
+%     Z1 = [Z1 ; IponeAll{p}{end}(:,OneFeat)];
+%     Zm = [Zm ; IpMultiAll{p}{end}];
+% g = [g;p*ones(length(IpMultiAll{p}{end}),1)];
+    
+    if p==1
+        Z1 = [IponeAll{p}{end}(1); IponeAll{p}{end}(3:end,OneFeat)];
+        ZM = [IpMultiAll{p}{end}(1); IpMultiAll{p}{end}(3:end)];
+    elseif p==2
+        Z1 = [IponeAll{p}{end}(1:2,OneFeat); IponeAll{p}{end}(4:11,OneFeat)];
+        ZM = [IpMultiAll{p}{end}(1:2); IpMultiAll{p}{end}(4:11)];
+    elseif p==3
+        Z1 = [IponeAll{p}{end}(1:3,OneFeat); IponeAll{p}{end}(5:end,OneFeat)];
+        ZM = [IpMultiAll{p}{end}(1:3); IpMultiAll{p}{end}(5:9); IpMultiAll{p}{end}(11:end)];
+    elseif p==4
+        Z1 = [IponeAll{p}{end}(1:4,OneFeat); IponeAll{p}{end}(6:end,OneFeat)];
+        ZM = [IpMultiAll{p}{end}(1:4); IpMultiAll{p}{end}(6:end)];
+    else    
+        ZM = IpMultiAll{p}{end};
+        Z1 = IponeAll{p}{end}(:,OneFeat);
+    end
+    mu1 = mean(Z1);
+    muAll=mean(ZM);
+    sd1= std(Z1);
+    sdAll=std(ZM);
+    subplot(121), hold on
+    if p==1 % only add shaded +/- 2 sd once
+        area([.5,4.5],[2,2],'FaceColor',[.76 .87 .78],'EdgeColor',[.23 .34 .44])
+        area([.5,4.5],[-2,-2],'FaceColor',[.76 .87 .78],'EdgeColor',[.23 .34 .44])
+    end
+    errorbar(p,mu1,sd1,'Color',colorsymb{p},'Linewidth',2,'MarkerSize',6,'Marker','o')
+    subplot(122), hold on
+    if p==1
+        area([.5,4.5],[2,2],'FaceColor',[.76 .87 .78],'EdgeColor',[.23 .34 .44])
+        area([.5,4.5],[-2,-2],'FaceColor',[.76 .87 .78],'EdgeColor',[.23 .34 .44])
+    end
+    errorbar(p,muAll,sdAll,'Color',colorsymb{p},'Linewidth',2,'MarkerSize',6,'Marker','o')
+end
 
+subplot(121), hold on
+% plot([.5,4.5],[2,2],'g','Linewidth',2,'MarkerSize',6)
+% plot([.5,4.5],[-2,-2],'g','Linewidth',2,'MarkerSize',6)
+title('Steps Only')
+xlabel('Patient Code')
+ylabel('Z-score')
+ylim([-90,10])
+xlim([.5,4.5])
+set(gca,'XTickLabel',{'R09', 'R10', 'R11', 'R15'})
+
+subplot(122), hold on
+% plot([.5,4.5],[2,2],'g','Linewidth',2,'MarkerSize',6)
+% plot([.5,4.5],[-2,-2],'g','Linewidth',2,'MarkerSize',6)
+title('All Features')
+xlabel('Patient Code')
+ylabel('Z-score')
+ylim([-90,10])
+xlim([.5,4.5])
+set(gca,'XTickLabel',{'R09', 'R10', 'R11', 'R15'})
 
 Z1 = []; ZM = []; g = [];
 for p =1:4
