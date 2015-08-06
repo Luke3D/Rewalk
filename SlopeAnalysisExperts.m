@@ -193,9 +193,18 @@ end
 for p =1:4
     Z1 = IponeAll{p}{end}(:,OneFeat);
     ZM = IpMultiAll{p}{end};
-    [p1,h1] = signrank(Z1+2,[],'tail','left','alpha',0.05) 
-    [pM,hM] = signrank(ZM+2,[],'tail','left','alpha',0.05) 
+    [p1,h1] = signrank(Z1+2,[],'tail','left','alpha',0.05/8) 
+    [pM,hM] = signrank(ZM+2,[],'tail','left','alpha',0.05/8) 
 end
+
+% %t-test
+% for p =1:4
+%     Z1 = IponeAll{p}{end}(:,OneFeat);
+%     ZM = IpMultiAll{p}{end};
+%     [httest1,pvttest1] = ttest(Z1,-2,'Tail','left','Alpha',0.05/8) %test that score is lower than -2
+%     [httestM,pvttestM] = ttest(ZM,-2,'Tail','left','Alpha',0.05/8)
+% end
+    
 
 stderror=figure;
 for p =1:4
